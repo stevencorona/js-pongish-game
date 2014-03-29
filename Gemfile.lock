@@ -55,4 +55,5 @@ PLATFORMS
 
 DEPENDENCIES
   guard-livereload
+  rack
   thin
