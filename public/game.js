@@ -26,14 +26,47 @@ Game.keys = {
 }
 
 Game.prototype.start = function() {
-  var self = this,
-      fps  = 60,
-      interval = 1000 / fps
+  var self = this
+  this.lastUpdateTime = new Date().getTime()
 
-  setInterval(function() {
-    self.update()
-    self.draw()
-  }, interval)
+  onFrame(function() {
+    self.fixedTimeStep()
+  })
+}
+
+var onFrame = function(callback) {
+  if (window.requestAnimationFrame) {
+    requestAnimationFrame(function() {
+      callback()
+      onFrame(callback)
+    })
+  } else {
+    var fps = 60
+    setInterval(callback, 1000 / fps)
+  }
+}
+
+
+Game.prototype.fixedTimeStep = function() {
+  var fps = 60,
+      interval = 1000 / fps,
+      updated = false
+
+  var loop = 0
+
+  while (this.lastUpdateTime < new Date().getTime()) {
+    this.update()
+    updated = true
+
+    this.lastUpdateTime += interval
+    loop++
+    if (loop > 1) {
+      console.log("skipped frame")
+    }
+  }
+
+  if (updated) this.draw()
+  updated = false
 }
 
 
